@@ -40,7 +40,6 @@ def main():
     # определяем словарь переменных контекста, которые определены в шаблоне документа DOCX
     for award in awards:
         save_award(award)
-        print(award)
 
     # реализовать указание файла со списком награждаемых, по умолчанию - awards.xlsx
     # wine_parser = argparse.ArgumentParser(description='Сайт магазина авторского вина "Новое русское вино"')
