@@ -1,5 +1,5 @@
 from docxtpl import DocxTemplate
-import argparse
+# import argparse
 import pandas
 import string
 from pathlib import Path
@@ -38,13 +38,9 @@ def main():
     awards = get_awards_from_file('awards.xlsx')
 
     # определяем словарь переменных контекста, которые определены в шаблоне документа DOCX
-    i = 0
     for award in awards:
         save_award(award)
         print(award)
-        i += 1
-        if i > 7:
-            exit()
 
     # реализовать указание файла со списком награждаемых, по умолчанию - awards.xlsx
     # wine_parser = argparse.ArgumentParser(description='Сайт магазина авторского вина "Новое русское вино"')
