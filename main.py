@@ -2,8 +2,7 @@ from docxtpl import DocxTemplate
 import argparse
 import pandas
 import string
-from pathlib import Path, PurePosixPath
-import piptree
+from pathlib import Path
 
 
 def get_awards_from_file(awards_file):
@@ -36,8 +35,6 @@ def save_award(award):
 
 
 def main():
-    print(piptree.show('requirements.txt'))
-    exit()
     awards = get_awards_from_file('awards.xlsx')
 
     # определяем словарь переменных контекста, которые определены в шаблоне документа DOCX
