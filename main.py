@@ -1,5 +1,7 @@
 from docxtpl import DocxTemplate
-# import argparse
+import os
+import argparse
+from environs import Env
 import pandas
 import string
 from pathlib import Path
@@ -37,55 +39,64 @@ def save_award(award, task_id):
     if task_id == 1:
         doc.save(f"{file_path}/{surname_initials} {organization} {award['award_type']}.docx")
     elif task_id == 2:
-        doc.save(f"{file_path}/{surname_initials} {organization} {award['award_type']} протокол.docx")
+        doc.save(f"{file_path}/{surname_initials} {organization} протокол.docx")
 
 
 def main():
+    award_parser = argparse.ArgumentParser(description='Скрипт создания проектов бланков награждений или '
+                                                       'выписок из протоколов')
+    award_parser.add_argument(
+        'path',
+        nargs='?',
+        default=os.path.join(os.getcwd(), 'awards.xlsx'),
+        help='директория с файлом awards.xlsx или awards_for_protocol.xlsx '
+             '(по умолчанию - ПУТЬ_К_ПАПКЕ_СО_СКРИПТОМ/awards.xlsx)'
+    )
+    award_parser.add_argument(
+        'task_id',
+        nargs='?',
+        default=1,
+        help='Тип задачи: \n'
+             '1 - Создание Почетных граммот и Благодарностей\n'
+             '2 - Создание выписок из протоколов\n'
+    )
 
-    task_id = int(input('1 - Создание Почетных граммот и Благодарностей\n '
-                    '2 - Создание выписок из протоколов\n'
-                    'Введите задачу: \n '))
+    awards = {}
+    path = award_parser.parse_args().path
+    try:
+        awards = get_awards_from_file(path)
+    except (FileNotFoundError, ValueError) as error:
+        print(f'Неверно указан путь к файлу.\nОшибка: {error}')
+        print(f'Поиск в файле setup.txt в корневой папке.\n')
+        environs = Env()
+        try:
+            environs.read_env("setup.txt", recurse=False)
+            path = environs.str('PATH_TO_AWARDS_FILE')
+            awards = get_awards_from_file(path)
+        except (FileNotFoundError, ValueError) as error:
+            exit(f'setup.txt в корневой папке не найден или в нем не указан путь к файлу награждений.\n'
+                 f'Ошибка: {error}')
+
+    print(f'Скрипт запущен с файлом данных {path}')
+
+    task_id = int(award_parser.parse_args().task_id)
+    if task_id not in (1, 2):
+        task_id = int(input('1 - Создание Почетных граммот и Благодарностей\n'
+                            '2 - Создание выписок из протоколов\n'
+                            'Введите задачу: \n '))
 
     if task_id == 1:
+        print('Создаем проекты грамот и благодарностей')
         awards = get_awards_from_file('awards.xlsx')
     elif task_id == 2:
+        print('Создаем проекты выписок из протоколов')
         awards = get_awards_from_file('awards_for_protocol.xlsx')
     else:
-        exit('Что то не так')
+        exit('Неверно передан код задачи')
 
     # определяем словарь переменных контекста, которые определены в шаблоне документа DOCX
-    i = 1
     for award in awards:
         save_award(award, task_id)
-        i += 1
-        if i > 5:
-            break
-
-    # реализовать указание файла со списком награждаемых, по умолчанию - awards.xlsx
-    # wine_parser = argparse.ArgumentParser(description='Сайт магазина авторского вина "Новое русское вино"')
-    # wine_parser.add_argument(
-    #     'path',
-    #     nargs='?',
-    #     default=os.path.join(os.getcwd(), 'wine.xlsx'),
-    #     help='директория с файлом wine.xlsx (по умолчанию - ПУТЬ_К_ПАПКЕ_СО_СКРИПТОМ/wine.xlsx)'
-    # )
-    #
-    # path = wine_parser.parse_args().path
-    # try:
-    #     wines = get_wines_from_file(path)
-    # except (FileNotFoundError, ValueError) as error:
-    #     print(f'Неверно указан путь к файлу.\nОшибка: {error}')
-    #     environs = Env()
-    #     try:
-    #         environs.read_env("setup.txt", recurse=False)
-    #         path = environs.str('PATH_TO_WINE_FILE')
-    #         wines = get_wines_from_file(path)
-    #     except (FileNotFoundError, ValueError) as error:
-    #         print(f'setup.txt в корневой папке не найден или в нем не указан путь к файлу вин в PATH_TO_WINE_FILE.\n'
-    #               f'Ошибка: {error}')
-    #         exit()
-    #
-    # print(f'Сайт запущен с файлом базы данных {path}')
 
 
 if __name__ == '__main__':
