@@ -10,14 +10,17 @@ def get_awards_from_file(awards_file):
     return awards
 
 
-def save_award(award):
+def save_award(award, task_id):
     # подставляем контекст в шаблон
-    if award['award_type'] == 'Почетная грамота':
+    if task_id == 1 and award['award_type'] == 'Почетная грамота':
         doc = DocxTemplate("diploma_tpl.docx")
-    elif award['award_type'] == 'Благодарность':
+    elif task_id == 1 and award['award_type'] == 'Благодарность':
         doc = DocxTemplate("gratitude_tpl.docx")
+    elif task_id == 2:
+        doc = DocxTemplate("protocol_tpl.docx")
     else:
         return
+
     doc.render(award)
 
     surname, name, patronymic = award['surname_name_patronymic'].split()
@@ -31,15 +34,32 @@ def save_award(award):
     Path(file_path).mkdir(parents=True, exist_ok=True)
 
     print(f"{surname_initials} {organization} {award['award_type']}")
-    doc.save(f"{file_path}/{surname_initials} {organization} {award['award_type']}.docx")
+    if task_id == 1:
+        doc.save(f"{file_path}/{surname_initials} {organization} {award['award_type']}.docx")
+    elif task_id == 2:
+        doc.save(f"{file_path}/{surname_initials} {organization} {award['award_type']} протокол.docx")
 
 
 def main():
-    awards = get_awards_from_file('awards.xlsx')
+
+    task_id = int(input('1 - Создание Почетных граммот и Благодарностей\n '
+                    '2 - Создание выписок из протоколов\n'
+                    'Введите задачу: \n '))
+
+    if task_id == 1:
+        awards = get_awards_from_file('awards.xlsx')
+    elif task_id == 2:
+        awards = get_awards_from_file('awards_for_protocol.xlsx')
+    else:
+        exit('Что то не так')
 
     # определяем словарь переменных контекста, которые определены в шаблоне документа DOCX
+    i = 1
     for award in awards:
-        save_award(award)
+        save_award(award, task_id)
+        i += 1
+        if i > 5:
+            break
 
     # реализовать указание файла со списком награждаемых, по умолчанию - awards.xlsx
     # wine_parser = argparse.ArgumentParser(description='Сайт магазина авторского вина "Новое русское вино"')
