@@ -31,6 +31,10 @@ num	    surname_name_patronymic	    organization
 ```
 PATH_TO_WINE_FILE='e:\Python\Letters_creating\addressees.xlsx'
 ```
+Там же задается дополнение к названию файла, указываемое после фамилиии и инициалов адресата
+```
+WHAT_IS_THE_LETTER_ABOUT=дополнение к названию файла
+```
 
 
 ## Запуск
