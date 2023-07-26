@@ -1,1 +1,2 @@
-PATH_TO_AWARDS_FILE=awards222.xlsx
+PATH_TO_AWARDS_FILE=addressees.xlsx
+WHAT_IS_THE_LETTER_ABOUT=приглашение на РФИ-2023
