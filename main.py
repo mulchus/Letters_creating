@@ -20,8 +20,6 @@ def save_award(addressee, what_is_the_letter_about):
     addressee['surname_initials'] = surname_initials
     addressee['initials_surname'] = initials_surname
     addressee['name_patronymic'] = f'{name} {patronymic}'
-    print(addressee)
-    print(what_is_the_letter_about)
     doc = DocxTemplate("letter_tpl.docx")
     doc.render(addressee)
 
@@ -46,7 +44,6 @@ def main():
     )
     environs = Env()
     environs.read_env("setup.txt", recurse=False)
-    docs = {}
     path = docs_parser.parse_args().path
     try:
         addressees = get_addressees_from_file(path)
@@ -62,8 +59,7 @@ def main():
 
     what_is_the_letter_about = environs.str('WHAT_IS_THE_LETTER_ABOUT')
     print(f'Скрипт запущен с файлом данных {path}')
-
-    print('Создаем проекты писем')
+    print('Создаем проекты писем: ')
     # addressees = get_addressees_from_file('addressees.xlsx')
 
     # определяем словарь переменных контекста, которые определены в шаблоне документа DOCX
